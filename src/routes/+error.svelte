@@ -16,6 +16,6 @@
   <div class="container mx-auto p-8">
     <h1 class="mb-4 text-2xl font-bold">Error {page.status}</h1>
     <p class="mb-4">{page.error?.message || 'An unexpected error occurred'}</p>
-    <a href={resolve('/')} class="text-blue-500 hover:underline">Return to Home</a>
+    <a href={resolve('/')} class="text-accent hover:underline">Return to Home</a>
   </div>
 {/if}

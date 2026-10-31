@@ -102,7 +102,7 @@ editorTest.describe('Share dialog embed section', () => {
     void editPage;
     await page.getByRole('button', { name: 'Share' }).click();
     const dialog = page.getByRole('dialog');
-    await expect(dialog.getByRole('heading', { name: 'Mermaid Live Editor' })).toBeVisible();
+    await expect(dialog.getByRole('heading', { name: 'Solvey Diagram Editor' })).toBeVisible();
     await expect(dialog.getByRole('heading', { name: 'Embed' })).toBeVisible();
     // The Mermaid Chart Playground is retired and must not be offered any more.
     await expect(dialog).not.toContainText('Playground');

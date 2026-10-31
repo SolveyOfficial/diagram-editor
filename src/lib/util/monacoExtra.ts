@@ -558,12 +558,15 @@ export const initEditor = (monacoEditor: typeof Monaco): void => {
 
   monacoEditor.editor.defineTheme('mermaid-dark', {
     base: 'vs-dark',
-    colors: {},
+    colors: {
+      'editor.background': '#141416',
+      'editorGutter.background': '#141416'
+    },
     inherit: true,
     rules: [
-      { fontStyle: 'bold', foreground: '9650c8', token: 'typeKeyword' },
-      { fontStyle: 'bold', foreground: '008800', token: 'transition' },
-      { foreground: '9cdcfe', token: 'identifier' }
+      { fontStyle: 'bold', foreground: 'c5b9f9', token: 'typeKeyword' },
+      { fontStyle: 'bold', foreground: '4ade80', token: 'transition' },
+      { foreground: 'dbd5f5', token: 'identifier' }
     ]
   });
 

@@ -171,7 +171,7 @@
                     target="_blank"
                     rel="noopener"
                     title="Open revision in new tab"
-                    class="min-w-0 truncate text-blue-500 hover:underline">{name}</a>
+                    class="min-w-0 truncate text-accent hover:underline">{name}</a>
                 {:else if editingId === id}
                   <input
                     class="min-w-0 flex-1 rounded border px-1 text-sm"

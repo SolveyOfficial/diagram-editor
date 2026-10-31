@@ -64,8 +64,8 @@
     <div class="flex flex-col gap-4">
       <div class="flex flex-col gap-2">
         <h2 class="flex items-center gap-2">
-          <img class="size-5" src={asset('/favicon.svg')} alt="Mermaid Live Editor" />
-          Mermaid Live Editor
+          <img class="size-5" src={asset('/favicon.svg')} alt="" />
+          Solvey Diagram Editor
         </h2>
         <CopyInput value={window.location.href} />
         <Dialog.Description>

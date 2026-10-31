@@ -2,6 +2,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { FileSystemIconLoader } from 'unplugin-icons/loaders';
 import Icons from 'unplugin-icons/vite';
+import license from 'rollup-plugin-license';
 import { defineConfig } from 'vite';
 import devtoolsJson from 'vite-plugin-devtools-json';
 
@@ -17,7 +18,30 @@ const alwaysFullReload = {
   }
 };
 
-export default defineConfig({
+// Collects the licences of every package bundled into the browser build.
+// scripts/notices.js turns this into THIRD_PARTY_NOTICES.md in the output.
+const thirdPartyLicences = license({
+  thirdParty: {
+    output: {
+      file: '.svelte-kit/third-party-licences.json',
+      template: (dependencies) =>
+        JSON.stringify(
+          dependencies.map(
+            ({ licenseText, license: id, name, noticeText, repository, version }) => ({
+              id,
+              licenseText,
+              name,
+              noticeText,
+              repository: typeof repository === 'string' ? repository : repository?.url,
+              version
+            })
+          )
+        )
+    }
+  }
+});
+
+export default defineConfig(({ isSsrBuild }) => ({
   plugins: [
     tailwindcss(),
     sveltekit(),
@@ -28,7 +52,8 @@ export default defineConfig({
       }
     }),
     alwaysFullReload,
-    devtoolsJson()
+    devtoolsJson(),
+    !isSsrBuild && thirdPartyLicences
   ],
   envPrefix: 'MERMAID_',
   server: { port: 3000, host: true },
@@ -53,4 +78,4 @@ export default defineConfig({
       reporter: ['text', 'json', 'html', 'lcov']
     }
   }
-});
+}));
