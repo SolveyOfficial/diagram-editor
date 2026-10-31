@@ -104,7 +104,7 @@ editorTest.describe('Share dialog embed section', () => {
     const dialog = page.getByRole('dialog');
     await expect(dialog.getByRole('heading', { name: 'Solvey Diagram Editor' })).toBeVisible();
     await expect(dialog.getByRole('heading', { name: 'Embed' })).toBeVisible();
-    // The Mermaid Chart Playground is retired and must not be offered any more.
+    // Only this site's own link and the embed are offered
     await expect(dialog).not.toContainText('Playground');
   });
 

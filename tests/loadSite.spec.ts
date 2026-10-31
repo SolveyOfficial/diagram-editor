@@ -41,21 +41,21 @@ test.describe('Site Loads', () => {
       await dialog.accept();
       dialogAccepted = true;
     });
-    await editPage.start(
-      `/edit?${new URLSearchParams({
-        code: `data:application/vnd.mermaid,${encodeURIComponent('flowchart TD\nHello-->World')}`,
-        config: `data:application/json,${encodeURIComponent(
-          JSON.stringify({
-            someOtherSetting: 'Test value',
-            securityLevel: 'loose',
-            secure: [],
-            themeVariables: {
-              nodeBorder: '</style></svg><script>alert("XSS")</script>'
-            }
-          })
-        )}`
-      }).toString()}`
-    );
+    // A shared link carries the state in the URL hash; unsafe config must be scrubbed
+    const sharedState = Buffer.from(
+      JSON.stringify({
+        code: 'flowchart TD\nHello-->World',
+        mermaid: JSON.stringify({
+          someOtherSetting: 'Test value',
+          securityLevel: 'loose',
+          secure: [],
+          themeVariables: {
+            nodeBorder: '</style></svg><script>alert("XSS")</script>'
+          }
+        })
+      })
+    ).toString('base64');
+    await editPage.start(`/edit#base64:${sharedState}`);
     await editPage.checkTextInView('Hello');
     await expect.poll(() => dialogAccepted).toBeTruthy();
     const codeStore = await page.evaluate(() => localStorage.getItem('codeStore'));

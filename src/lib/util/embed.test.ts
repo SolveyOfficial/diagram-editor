@@ -7,7 +7,7 @@ import { deserializeState, serializeState } from './serde';
 const embedUrl = (state?: Partial<State>, params?: Record<string, string>): URL => {
   const query = params ? `?${new URLSearchParams(params).toString()}` : '';
   const hash = state ? `#${serializeState({ ...defaultState, ...state })}` : '';
-  return new URL(`https://mermaid.live/embed${query}${hash}`);
+  return new URL(`https://your-site.example/embed${query}${hash}`);
 };
 
 beforeEach(() => {
@@ -111,7 +111,7 @@ describe('resolveEmbedSettings', () => {
 
   it('should report an error for a malformed hash', () => {
     const { error, settings } = resolveEmbedSettings(
-      new URL('https://mermaid.live/embed#pako:garbage')
+      new URL('https://your-site.example/embed#pako:garbage')
     );
     expect(error).toBeDefined();
     expect(settings).toBeUndefined();
@@ -119,7 +119,7 @@ describe('resolveEmbedSettings', () => {
 
   it('should load diagram source from a #code: hash (web component body path)', () => {
     const { error, settings } = resolveEmbedSettings(
-      new URL('https://mermaid.live/embed?theme=forest#code:graph%20TD%0A%20%20A--%3EB')
+      new URL('https://your-site.example/embed?theme=forest#code:graph%20TD%0A%20%20A--%3EB')
     );
     expect(error).toBeUndefined();
     expect(settings?.code).toBe('graph TD\n  A-->B');
@@ -129,7 +129,7 @@ describe('resolveEmbedSettings', () => {
   it('should ignore a leftover ?code= query param', () => {
     const { settings } = resolveEmbedSettings(
       new URL(
-        'https://mermaid.live/embed?code=pie%0A%20%20%22a%22%3A%201#code:graph%20TD%0A%20%20A--%3EB'
+        'https://your-site.example/embed?code=pie%0A%20%20%22a%22%3A%201#code:graph%20TD%0A%20%20A--%3EB'
       )
     );
     expect(settings?.code).toBe('graph TD\n  A-->B');
@@ -173,8 +173,8 @@ describe('buildEditUrl', () => {
     if (!settings) {
       return;
     }
-    const url = buildEditUrl(serializeEmbedState(settings), 'https://mermaid.live/edit');
-    expect(url).toMatch(/^https:\/\/mermaid\.live\/edit#pako:/);
+    const url = buildEditUrl(serializeEmbedState(settings), 'https://your-site.example/edit');
+    expect(url).toMatch(/^https:\/\/your-site\.example\/edit#pako:/);
     const state = deserializeState(url.split('#')[1]);
     expect(state.code).toBe('graph TD\n  A-->B');
     expect(state.panZoom).toBe(true);

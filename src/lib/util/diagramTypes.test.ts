@@ -29,27 +29,6 @@ describe('describeDiagram', () => {
   });
 
   it.each([
-    'flowchart-v2',
-    'stateDiagram',
-    'classDiagram',
-    'sequence',
-    'er',
-    'requirement',
-    'mindmap'
-  ])('supports visual editing for %s', (detected) => {
-    expect(describeDiagram(detected)?.visualEdit).toBe(true);
-  });
-
-  it('does not support visual editing for other diagrams', () => {
-    expect(describeDiagram('pie')?.visualEdit).toBe(false);
-  });
-
-  it('marks zenuml as unsupported by external services', () => {
-    expect(describeDiagram('zenuml')?.externalServices).toBe(false);
-    expect(describeDiagram('sequence')?.externalServices).toBe(true);
-  });
-
-  it.each([
     ['railroadEbnf', '/syntax/railroad.html#ebnf-railroad-ebnf-beta'],
     ['swimlane', '/syntax/swimlanes.html'],
     ['treeView', '/syntax/treeView.html']
@@ -59,9 +38,7 @@ describe('describeDiagram', () => {
 
   it('describes unknown diagram types without docs', () => {
     expect(describeDiagram('not-a-diagram')).toEqual({
-      externalServices: true,
-      id: 'not-a-diagram',
-      visualEdit: false
+      id: 'not-a-diagram'
     });
   });
 

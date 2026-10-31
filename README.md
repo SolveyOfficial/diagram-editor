@@ -1,121 +1,44 @@
-[![Join our Discord!](https://img.shields.io/static/v1?message=join%20chat&color=9cf&logo=discord&label=discord)](https://discord.gg/sKeNQX4Wtj)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/27fa023d-7c73-4a3f-9791-b3b657a47100/deploy-status)](https://app.netlify.com/sites/mermaidjs/deploys)
+# Solvey Diagram Editor
 
-# Mermaid Live Editor
+Create flowcharts, sequence diagrams, Gantt charts and more from text, and see
+them update as you type. Powered by [Mermaid](https://mermaid.js.org).
 
-Edit, preview and share mermaid charts/diagrams.
+## Private by design
+
+Everything runs in your browser. Diagrams are stored only in the page URL and
+your browser's local storage, and are never uploaded. The app has no analytics
+or tracking and loads no third-party resources. Once loaded, it also works
+offline.
 
 ## Features
 
-- Edit and preview flowcharts, sequence diagrams, gantt diagrams in real time.
-- Save the result as a svg
-- Get a link to a viewer of the diagram so that you can share it with others.
-- Get a link to edit the diagram so that someone else can tweak it and send a new link back
-
-## Live demo
-
-You can try out a [live version](https://mermaid.live/).
-
-# Contributors are welcome!
-
-If you want to speed up the progress for mermaid-live-editor, join the Discord channel and contact knsv.
-
-## Docker
-
-### Run published image
-
-```bash
-docker run --platform linux/amd64 --publish 8000:8080 ghcr.io/mermaid-js/mermaid-live-editor
-```
-
-The published docker image is built using our default environment variables. You cannot override them when running the image. If you need to customize them, you will need to build the image yourself.
-
-### To configure renderer URL
-
-When building set the MERMAID_RENDERER_URL build argument to the rendering
-service.
-Example:
-Default is`https://mermaid.ink`.
-Set to empty string to disable PNG and SVG links under Actions
-
-### To configure Kroki Instance URL
-
-When building set the MERMAID_KROKI_RENDERER_URL build argument to your Kroki
-instance.
-Default is `https://kroki.io`
-Set to empty string to disable Kroki link under Actions
-
-### To configure Analytics
-
-When building set the MERMAID_ANALYTICS_URL build argument to your plausible instance, and MERMAID_DOMAIN to your domain.
-
-Default is empty, disabling analytics.
-
-### To enable Mermaid Chart links and promotion
-
-When building set the MERMAID_IS_ENABLED_MERMAID_CHART_LINKS build argument to `true`
-
-Default is empty, disabling button to save to Mermaid Chart and promotional banner.
-
-### To update the Security modal
-
-The modal shown on clicking the security link assumes analytics, renderer, Kroki
-and Mermaid chart are enabled. You can update it by modifying `Privacy.svelte`
-if you wish.
-
-### Development
-
-```bash
-docker compose up --build
-```
-
-Then open http://localhost:3000
-
-### Building and running images locally
-
-#### Build
-
-```bash
-docker build -t mermaid-js/mermaid-live-editor .
-```
-
-#### Run
-
-```bash
-docker run --detach --name mermaid-live-editor --publish 8080:8080 mermaid-js/mermaid-live-editor
-```
-
-Visit: <http://localhost:8080>
-
-#### Stop
-
-```bash
-docker stop mermaid-live-editor
-```
-
-## Setup
-
-Below link will help you making a copy of the repository in your local system.
-
-https://docs.github.com/en/get-started/quickstart/fork-a-repo
-
-## Requirements
-
-- [Node.js](https://nodejs.org/en/) current LTS version
-- [pnpm](https://pnpm.io/) package manager. Install with `corepack enable pnpm`
+- Live preview with pan and zoom, a grid and a hand-drawn ("rough") style
+- Code and configuration editors with syntax highlighting and error markers
+- Sample diagrams for every Mermaid diagram type
+- Export to PNG or SVG, or copy the image to the clipboard
+- Share a link to a diagram, or embed it in another page
+- History of your recent diagrams, kept in your browser
+- Light and dark themes
 
 ## Development
 
+You need Node.js 24.16 or later and pnpm (`corepack enable pnpm`).
+
 ```sh
-pnpm install
-pnpm dev -- --open
+pnpm install        # install dependencies
+pnpm dev            # development server at http://localhost:3000
+pnpm lint           # Prettier and ESLint
+pnpm check          # type check
+pnpm vitest run     # unit tests
+pnpm test:e2e       # browser tests (Playwright)
+pnpm build          # production build in docs/
 ```
 
-This app is created with Svelte Kit.
+The build also writes `THIRD_PARTY_NOTICES.md`, listing every bundled package
+and font with its licence. It is linked from the app menu as "Licences".
 
-## Release
+When the repository is public, every push to `main` is published to GitHub Pages.
 
-When a PR is created targeting master, it will be built and deployed by Netlify.
-The URL will be indicated in a Comment in the PR.
+## Licence
 
-Once the PR is merged, it will automatically be released.
+MIT, see LICENSE.

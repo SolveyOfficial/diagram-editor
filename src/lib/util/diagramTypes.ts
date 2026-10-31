@@ -15,10 +15,6 @@ export interface DiagramInfo {
   id: string;
   /** Paths relative to the docs base URL. Absent when there is no docs page. */
   docs?: DiagramDocs;
-  /** Whether Mermaid Chart can edit this diagram type visually. */
-  visualEdit: boolean;
-  /** Whether external renderers and editors (mermaid.ink, Kroki, Mermaid Chart) support it. */
-  externalServices: boolean;
 }
 
 type DiagramTraits = Partial<Omit<DiagramInfo, 'id'>>;
@@ -44,8 +40,7 @@ const catalog: Record<string, DiagramTraits> = {
     docs: { code: '/syntax/c4.html' }
   },
   class: {
-    docs: { code: '/syntax/classDiagram.html', config: '/syntax/classDiagram.html#configuration' },
-    visualEdit: true
+    docs: { code: '/syntax/classDiagram.html', config: '/syntax/classDiagram.html#configuration' }
   },
   cynefin: {
     docs: { code: '/syntax/cynefin.html', config: '/syntax/cynefin.html#configuration' }
@@ -54,15 +49,13 @@ const catalog: Record<string, DiagramTraits> = {
     docs: {
       code: '/syntax/entityRelationshipDiagram.html',
       config: '/syntax/entityRelationshipDiagram.html#styling'
-    },
-    visualEdit: true
+    }
   },
   eventmodeling: {
     docs: { code: '/syntax/eventmodeling.html' }
   },
   flowchart: {
-    docs: { code: '/syntax/flowchart.html', config: '/syntax/flowchart.html#configuration' },
-    visualEdit: true
+    docs: { code: '/syntax/flowchart.html', config: '/syntax/flowchart.html#configuration' }
   },
   gantt: {
     docs: { code: '/syntax/gantt.html', config: '/syntax/gantt.html#configuration' }
@@ -83,8 +76,7 @@ const catalog: Record<string, DiagramTraits> = {
     docs: { code: '/syntax/kanban.html', config: '/syntax/kanban.html#configuration-options' }
   },
   mindmap: {
-    docs: { code: '/syntax/mindmap.html' },
-    visualEdit: true
+    docs: { code: '/syntax/mindmap.html' }
   },
   packet: {
     docs: {
@@ -117,8 +109,7 @@ const catalog: Record<string, DiagramTraits> = {
     docs: { code: '/syntax/railroad.html#peg-railroad-peg-beta' }
   },
   requirement: {
-    docs: { code: '/syntax/requirementDiagram.html' },
-    visualEdit: true
+    docs: { code: '/syntax/requirementDiagram.html' }
   },
   sankey: {
     docs: { code: '/syntax/sankey.html', config: '/syntax/sankey.html#configuration' }
@@ -127,12 +118,10 @@ const catalog: Record<string, DiagramTraits> = {
     docs: {
       code: '/syntax/sequenceDiagram.html',
       config: '/syntax/sequenceDiagram.html#configuration'
-    },
-    visualEdit: true
+    }
   },
   stateDiagram: {
-    docs: { code: '/syntax/stateDiagram.html' },
-    visualEdit: true
+    docs: { code: '/syntax/stateDiagram.html' }
   },
   swimlane: {
     docs: { code: '/syntax/swimlanes.html' }
@@ -159,8 +148,7 @@ const catalog: Record<string, DiagramTraits> = {
     docs: { code: '/syntax/xyChart.html', config: '/syntax/xyChart.html#chart-configurations' }
   },
   zenuml: {
-    docs: { code: '/syntax/zenuml.html' },
-    externalServices: false
+    docs: { code: '/syntax/zenuml.html' }
   }
 };
 
@@ -169,6 +157,6 @@ export const describeDiagram = (detectedType: string | undefined): DiagramInfo |
     return undefined;
   }
   const id = aliases[detectedType] ?? detectedType;
-  const { docs, externalServices = true, visualEdit = false } = catalog[id] ?? {};
-  return { id, ...(docs && { docs }), externalServices, visualEdit };
+  const { docs } = catalog[id] ?? {};
+  return { id, ...(docs && { docs }) };
 };

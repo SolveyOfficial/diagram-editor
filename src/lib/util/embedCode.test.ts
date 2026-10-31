@@ -3,12 +3,12 @@ import { buildEmbedCode } from './embedCode';
 import { deserializeState } from './serde';
 
 const code = 'graph TD\n  A-->B';
-const host = 'https://mermaid.live';
+const host = 'https://your-site.example';
 
 describe('buildEmbedCode', () => {
   it('should build a canonical embed URL with the state in the hash', () => {
     const { url } = buildEmbedCode({ code, host, theme: 'forest' });
-    expect(url).toMatch(/^https:\/\/mermaid\.live\/embed\?theme=forest#pako:/);
+    expect(url).toMatch(/^https:\/\/your-site\.example\/embed\?theme=forest#pako:/);
     const state = deserializeState(url.split('#')[1]);
     expect(state.code).toBe(code);
     expect(JSON.parse(state.mermaid)).toEqual({ theme: 'forest' });
@@ -30,7 +30,7 @@ describe('buildEmbedCode', () => {
 
   it('should omit query params for default settings', () => {
     const { url } = buildEmbedCode({ code, host });
-    expect(url).toMatch(/^https:\/\/mermaid\.live\/embed#pako:/);
+    expect(url).toMatch(/^https:\/\/your-site\.example\/embed#pako:/);
   });
 
   it('should encode disabled controls and grid as =0 params', () => {
@@ -87,7 +87,7 @@ describe('buildEmbedCode', () => {
   });
 
   it('should strip trailing slashes from the host', () => {
-    const { url } = buildEmbedCode({ code, host: 'https://mermaid.live/' });
-    expect(url).toMatch(/^https:\/\/mermaid\.live\/embed#/);
+    const { url } = buildEmbedCode({ code, host: 'https://your-site.example/' });
+    expect(url).toMatch(/^https:\/\/your-site\.example\/embed#/);
   });
 });
