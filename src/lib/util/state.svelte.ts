@@ -4,7 +4,6 @@ import { resolve } from '$app/paths';
 import { debounce, get as lodashGet } from 'lodash-es';
 import type { MermaidConfig } from 'mermaid';
 import { untrack } from 'svelte';
-import { env } from './env';
 import {
   extractErrorLineText,
   findMostRelevantLineNumber,
@@ -13,21 +12,20 @@ import {
 import { darkVariantOf, getDefaultTheme, isManagedTheme, parse } from './mermaid';
 import { readJSON, writeJSON } from './persist.svelte';
 import { findUnsafeConfigPaths, stripConfigPaths } from './sanitize';
-import { deserializeState, pakoSerde, serializeState } from './serde';
-import { errorDebug, formatJSON, getUTMSource, MCBaseURL } from './util';
+import { deserializeState, serializeState } from './serde';
+import { errorDebug, formatJSON } from './util';
 
 export { defaultState };
 
 const urlParseFailedState = `flowchart TD
     A[Loading URL failed. We can try to figure out why.] -->|Decode JSON| B(Please check the console to see the JSON and error details.)
     B --> C{Is the JSON correct?}
-    C -->|Yes| D(Please Click here to Raise an issue in github.<br/>Including the broken link in the issue <br/> will speed up the fix.)
+    C -->|Yes| D(The link may be damaged.<br/>Ask for a fresh copy of the link<br/>or rebuild the diagram.)
     C -->|No| E{Did someone <br/>send you this link?}
     E -->|Yes| F[Ask them to send <br/>you the complete link]
     E -->|No| G{Did you copy <br/> the complete URL?}
     G --> |Yes| D
-    G --> |"No :("| H(Try using the Timeline tab in History <br/>from same browser you used to create the diagram.)
-    click D href "https://github.com/mermaid-js/mermaid-live-editor/issues/new?assignees=&labels=bug&template=bug_report.md&title=Broken%20link" "Raise issue"`;
+    G --> |"No :("| H(Try using the Timeline tab in History <br/>from same browser you used to create the diagram.)`;
 
 const CODE_STORE_KEY = 'codeStore';
 
@@ -149,42 +147,9 @@ export const validatedState = {
 };
 
 const urlsCurrent = $derived.by(() => {
-  const { code, serialized } = validatedCurrent;
-  const { krokiRendererUrl, rendererUrl } = env;
-  const png = rendererUrl ? `${rendererUrl}/img/${serialized}?type=png` : '';
+  const { serialized } = validatedCurrent;
   return {
-    kroki: krokiRendererUrl ? `${krokiRendererUrl}/mermaid/svg/${pakoSerde.serialize(code)}` : '',
-    mdCode: png ? `[![](${png})](${window.location.href})` : '',
-    mermaidChart: ({
-      medium,
-      campaign
-    }: {
-      medium:
-        | 'ai_edit'
-        | 'ai_repair'
-        | 'main_menu'
-        | 'save_diagram'
-        | 'vibe_diagramming'
-        | 'visual_edit'
-        | 'voice_edit';
-      campaign?: string;
-    }) => {
-      const utmSource = getUTMSource();
-      const params = new URLSearchParams({
-        utm_source: utmSource,
-        utm_medium: medium,
-        ...(campaign ? { utm_campaign: campaign } : {})
-      }).toString();
-      return {
-        save: `${MCBaseURL}/app/plugin/save?state=${serialized}&${params}`,
-        playground: `${MCBaseURL}/play?${params}#${serialized}`,
-        plugins: `${MCBaseURL}/plugins?${params}`,
-        home: `${MCBaseURL}/?${params}`
-      };
-    },
     new: `${resolve('/edit', {})}#${serializeState(defaultState)}`,
-    png,
-    svg: rendererUrl ? `${rendererUrl}/svg/${serialized}` : '',
     view: `${resolve('/view', {})}#${serialized}`
   };
 });

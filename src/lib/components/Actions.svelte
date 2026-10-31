@@ -1,23 +1,16 @@
 <script lang="ts">
   import Card from '$/components/Card/Card.svelte';
   import CopyButton from '$/components/CopyButton.svelte';
-  import CopyInput from '$/components/CopyInput.svelte';
-  import ExternalLinkWrapper from '$/components/ExternalLinkWrapper.svelte';
   import { Button } from '$/components/ui/button';
   import { Input } from '$/components/ui/input';
   import { Separator } from '$/components/ui/separator';
   import * as ToggleGroup from '$/components/ui/toggle-group';
-  import { TID } from '$/constants';
-  import { getDomain } from '$/util/util';
-  import { browser } from '$app/environment';
   import { waitForRender } from '$lib/util/autoSync';
-  import { inputState, updateCodeStore, urls, validatedState } from '$lib/util/state.svelte';
-  import { logEvent } from '$lib/util/stats';
+  import { inputState, updateCodeStore, validatedState } from '$lib/util/state.svelte';
   import { version as FAVersion } from '@fortawesome/fontawesome-free/package.json';
   import dayjs from 'dayjs';
   import { toBase64 } from 'js-base64';
   import DownloadIcon from '~icons/material-symbols/download';
-  import ExternalLinkIcon from '~icons/material-symbols/open-in-new-rounded';
   import WidthIcon from '~icons/material-symbols/width-rounded';
 
   const FONT_AWESOME_URL = `https://cdnjs.cloudflare.com/ajax/libs/font-awesome/${FAVersion}/css/all.min.css`;
@@ -92,9 +85,13 @@
       .replaceAll('<br>', '<br/>')
       .replaceAll(/<img([^>]*)>/g, (m, g: string) => `<img ${g} />`);
 
+    // Font Awesome icons in a diagram need its stylesheet when the file is viewed on its own
+    const usesFontAwesome = validatedState.current.code.includes('fa:');
+    const stylesheet = usesFontAwesome
+      ? `<?xml-stylesheet href="${FONT_AWESOME_URL}" type="text/css"?>\n`
+      : '';
     return toBase64(`<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet href="${FONT_AWESOME_URL}" type="text/css"?>
-${svgString}`);
+${stylesheet}${svgString}`);
   };
 
   const simulateDownload = (download: string, href: string): void => {
@@ -204,37 +201,14 @@ ${svgString}`);
       return;
     }
     await exportImage(event, clipboardCopy);
-    logEvent('copyClipboard');
   };
 
   const onDownloadPNG = async (event: Event) => {
     await exportImage(event, downloadImage);
-    logEvent('download', {
-      type: 'png'
-    });
   };
 
   const onDownloadSVG = () => {
     simulateDownload(getFileName('svg'), `data:image/svg+xml;base64,${getBase64SVG()}`);
-    logEvent('download', {
-      type: 'svg'
-    });
-  };
-
-  let gistURL = $state('');
-  $effect(() => {
-    const { loader } = validatedState.current;
-    if (loader?.type === 'gist') {
-      gistURL = loader.config.url;
-    }
-  });
-
-  const loadGist = () => {
-    if (!gistURL) {
-      return alert('Please enter a Gist URL first');
-    }
-    window.location.href = `${window.location.pathname}?gist=${gistURL}`;
-    logEvent('loadGist');
   };
 
   let imageSizeMode: 'auto' | 'width' | 'height' = $state('auto');
@@ -246,25 +220,13 @@ ${svgString}`);
   });
 
   let imageSize = $state(1080);
-
-  const isNetlify = browser && window.location.host.includes('netlify');
 </script>
 
-{#snippet dualActionButton(text: string, download: (event: Event) => unknown, url?: string)}
-  <div class="flex flex-grow gap-0.5">
-    <Button
-      class={['flex-grow', url && 'rounded-r-none']}
-      onclick={download}
-      data-testid="download-{text}">
-      <DownloadIcon />
-      {text}
-    </Button>
-    <ExternalLinkWrapper domain={getDomain(url)} isVisible={!!url}>
-      <Button class="rounded-l-none" href={url} target="_blank" rel="noreferrer noopener">
-        <ExternalLinkIcon />
-      </Button>
-    </ExternalLinkWrapper>
-  </div>
+{#snippet downloadButton(text: string, download: (event: Event) => unknown)}
+  <Button class="flex-grow" onclick={download} data-testid="download-{text}">
+    <DownloadIcon />
+    {text}
+  </Button>
 {/snippet}
 
 <Card title="Actions" isStackable icon={{ component: DownloadIcon, class: 'rotate-180' }}>
@@ -288,36 +250,12 @@ ${svgString}`);
         bind:value={imageSize} />
     </div>
     <div class="flex gap-2">
-      {@render dualActionButton('PNG', onDownloadPNG, urls.current.png)}
-      {@render dualActionButton('SVG', onDownloadSVG, urls.current.svg)}
-      <ExternalLinkWrapper domain={getDomain(urls.current.kroki)} isVisible={!!urls.current.kroki}>
-        <a target="_blank" rel="noreferrer" class="flex-grow" href={urls.current.kroki}>
-          <Button class="action-btn flex w-full items-center gap-2">
-            <ExternalLinkIcon /> Kroki
-          </Button>
-        </a>
-      </ExternalLinkWrapper>
+      {@render downloadButton('PNG', onDownloadPNG)}
+      {@render downloadButton('SVG', onDownloadSVG)}
     </div>
     <Separator />
     {#if isClipboardAvailable()}
       <CopyButton onclick={onCopyClipboard} label="Copy Image" />
-    {/if}
-    <ExternalLinkWrapper
-      labelPrefix="Thumbnail generated by"
-      domain={getDomain(urls.current.png)}
-      isVisible={!!urls.current.mdCode}>
-      <CopyInput value={urls.current.mdCode} label="Copy Markdown" testID={TID.copyMarkdown} />
-    </ExternalLinkWrapper>
-    <div class="flex w-full items-center gap-2">
-      <Input type="url" bind:value={gistURL} placeholder="Enter Gist URL" />
-      <Button onclick={loadGist}>Load Gist</Button>
-    </div>
-    {#if isNetlify}
-      <div class="flex w-full items-center justify-center">
-        <a class="link text-sm text-gray-500 underline" href="https://netlify.com">
-          This site is powered by Netlify
-        </a>
-      </div>
     {/if}
   </div>
 </Card>
