@@ -26,6 +26,12 @@ const fonts = [
   };
 });
 
+// Monaco ships the notices for code it bundles in its own file
+const monacoNotices = fs.readFileSync('node_modules/monaco-editor/ThirdPartyNotices.txt', 'utf8');
+for (const entry of collected) {
+  if (entry.name === 'monaco-editor') entry.noticeText = monacoNotices;
+}
+
 const seen = new Set();
 const entries = [...collected, ...fonts]
   .filter(({ name, version }) => {

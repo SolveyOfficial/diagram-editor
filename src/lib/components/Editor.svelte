@@ -6,7 +6,7 @@
   import { debounce } from 'lodash-es';
   import ExclamationCircleIcon from '~icons/material-symbols/error-outline-rounded';
 
-  const { isMobile } = $props<{ isMobile: boolean }>();
+  const { isMobile }: { isMobile: boolean } = $props();
   const onUpdate = (text: string) => {
     if (validatedState.current.editorMode === 'code') {
       updateCode(text);
