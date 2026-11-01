@@ -86,11 +86,27 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # solvey.in/tools/<repository>/ is forwarded to the tools/<repository>/
+      # folder of this site, so the same commit is also built for that path.
+      # Both builds write to the same folder, so this one goes first and is
+      # set aside
+      - name: Build the copy for solvey.in/tools
+        run: |
+          pnpm build
+          mv docs "$RUNNER_TEMP/tools-copy"
+        env:
+          MERMAID_BASE_PATH: /tools/${{ github.event.repository.name }}
+
       # GitHub Pages serves the site under the repository name
       - name: Build
         run: pnpm build
         env:
           MERMAID_BASE_PATH: /${{ github.event.repository.name }}
+
+      - name: Add the copy for solvey.in/tools
+        run: |
+          mkdir -p docs/tools
+          mv "$RUNNER_TEMP/tools-copy" "docs/tools/${{ github.event.repository.name }}"
 
       # Publishes to GitHub Pages once the repository is public
       - name: Upload site
